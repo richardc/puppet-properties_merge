@@ -3,9 +3,12 @@ class Propfile
         attr_accessor :line
         attr_accessor :key
 
-        def initialize(line, key = nil)
+        def initialize(line)
             self.line = line
-            self.key  = key
+
+            if line.match(/^\s*(\S+)=?/)
+                self.key = $1
+            end
         end
     end
 
@@ -17,28 +20,26 @@ class Propfile
         self.keys  = {}
 
         properties.split(/\n/).each do |line|
-            if line.match(/^\s*(\S+)=?/)
-                key = $1
-                lines << Propfile::Line.new(line, key)
-                keys[key] = lines.size - 1
+            add_line Propfile::Line.new(line)
+        end
+    end
+
+    def add_line(line)
+        if line.key
+            if keys[line.key] # Seen it before, update
+                lines[keys[line.key]] = line
             else
-                lines << Propfile::Line.new(line)
+                lines << line
+                keys[line.key] = lines.size - 1
             end
+        else
+            lines << line
         end
     end
 
     def merge(other)
         other.lines.each do |line|
-            if line.key
-                if keys[line.key]
-                    lines[keys[line.key]] = line
-                else
-                    lines << line
-                    keys[line.key] = lines.size - 1
-                end
-            else
-                lines << line
-            end
+            add_line line
         end
     end
 
