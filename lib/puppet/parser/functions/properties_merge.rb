@@ -6,7 +6,7 @@ class Propfile
         def initialize(line)
             self.line = line
 
-            if line.match(/^\s*(\S+)=?/)
+            if line.match(/^\s*(?!#)(\S+)=?/)
                 self.key = $1
             end
         end
