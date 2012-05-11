@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+require 'puppet'
+require 'puppet/parser/functions/properties_merge'
+
+
+# This is a semantic diff, so we don't care about non-key lines
+
+old = Propfile.new(IO.read(ARGV[0]))
+new = Propfile.new(IO.read(ARGV[1]))
+
+def normalise(line)
+    # normalise whitespace
+    line.line.gsub(/\s+/, ' ')
+end
+
+def diff(old, new)
+    delta = Propfile.new
+    new.lines.each do |line|
+        if line.key
+            if index = old.keys[line.key]
+                if normalise(line) != normalise(old.lines[index])
+                    delta.lines << line
+                end
+            else
+                delta.lines << line
+            end
+        end
+    end
+    delta
+end
+
+delta = diff(old, new)
+puts delta.to_s
