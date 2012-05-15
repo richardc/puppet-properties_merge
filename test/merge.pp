@@ -31,3 +31,8 @@ testcase { "append java style":
   expect => "foo.bar=one\nfoo.baz=two"
 }
 
+testcase { "override java style":
+  one => "foo.bar=one\n",
+  two => "foo.bar=two\n",
+  expect => "foo.bar=two",
+}
