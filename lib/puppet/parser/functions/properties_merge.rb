@@ -44,7 +44,9 @@ class Propfile
     end
 
     def to_s
-        self.lines.map { |l| l.line }.join("\n")
+        lines = self.lines.map { |l| l.line }
+        lines << ""   # add a trailing newline
+        lines.join("\n")
     end
 end
 
